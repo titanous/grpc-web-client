@@ -11,7 +11,7 @@ An implementation of the gRPC-Web protocol]that allows using tonic in browsers v
 """
 readme = "../README.md"
 categories = ["web-programming", "network-programming", "asynchronous"]
-keywords = ["rpc", "grpc", "grpc-web", "async", "futures", "protobuf", "wasm", "wasm-bindgen", "js", "tonic"]
+keywords = ["grpc", "tonic", "wasm", "wasm-bindgen", "js"]
 
 [dependencies]
 tonic = { version = "0.4.3", default-features = false }
