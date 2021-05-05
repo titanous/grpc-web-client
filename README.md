@@ -4,7 +4,7 @@ A Rust implementation of the [gRPC-Web protocol](https://github.com/grpc/grpc/bl
 
 ## Testing
 
-Running the tests requires [`wasm-pack`](https://rustwasm.github.io/wasm-pack/installer/) `wasm-pack`.
+Running the tests requires [`wasm-pack`](https://rustwasm.github.io/wasm-pack/installer/).
 
 To run the tests, first start the server:
 
