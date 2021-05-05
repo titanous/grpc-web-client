@@ -1,0 +1,27 @@
+[package]
+name = "test-client"
+version = "0.0.0"
+edition = "2018"
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+wasm-bindgen = { version = "0.2.73", default-features = false, features = ["serde-serialize"] }
+tonic = { version = "0.4.3", default-features = false, features = ["codegen", "prost"] }
+grpc-web-client = { path = "../../grpc-web-client" }
+prost = { version = "0.7.0", default-features = false }
+wasm-bindgen-test = { version = "0.3.23", default-features = false }
+js-sys = { version = "0.3.50", default-features = false }
+
+[build-dependencies]
+tonic-build = { version = "0.4.2", default-features = false, features = ["prost"] }
+
+[profile.release]
+lto = true
+opt-level = 'z'
+codegen-units = 1
+
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = ['-Os']

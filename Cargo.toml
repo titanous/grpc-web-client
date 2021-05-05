@@ -1,0 +1,7 @@
+[workspace]
+
+members = [
+    "grpc-web-client",
+    "test/test-client",
+    "test/test-server",
+]

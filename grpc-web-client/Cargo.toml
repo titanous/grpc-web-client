@@ -1,0 +1,49 @@
+[package]
+name = "grpc-web-client"
+version = "0.1.0"
+authors = ["Jonathan Rudenberg <jonathan@titanous.com>"]
+license = "MIT OR Apache-2.0"
+edition = "2018"
+repository = "https://github.com/titanous/grpc-web-client"
+homepage = "https://github.com/titanous/grpc-web-client"
+description = """
+An implementation of the gRPC-Web protocol]that allows using tonic in browsers via WASM.
+"""
+readme = "../README.md"
+categories = ["web-programming", "network-programming", "asynchronous"]
+keywords = ["rpc", "grpc", "grpc-web", "async", "futures", "protobuf", "wasm", "wasm-bindgen", "js", "tonic"]
+
+[dependencies]
+tonic = { version = "0.4.3", default-features = false }
+prost = { version = "0.7.0", default-features = false }
+http = { version = "0.2.4", default-features = false }
+http-body = { version = "0.4.1", default-features = false }
+bytes = { version = "1.0.1", default-features = false }
+byteorder = { version = "1.4.3", default-features = false }
+base64 = { version = "0.13.0", default-features = false }
+wasm-bindgen = { version = "0.2.73", default-features = false, features = ["serde-serialize"] }
+wasm-bindgen-futures = { version = "0.4.23", default-features = false }
+wasm-streams = { version = "0.1.2" }
+futures = { version = "0.3.13", default-features = false, features = ["alloc"] }
+js-sys = { version = "0.3.50", default-features = false }
+httparse = { version = "1.4.0", default-features = false }
+hyper = { version = "0.14.7", default-features = false }
+
+[dependencies.web-sys]
+version = "0.3.50"
+default-features = false
+features = [
+    "Headers",
+    "ReadableStream",
+    "Request",
+    "RequestCredentials",
+    "RequestInit",
+    "RequestMode",
+    "Response",
+    "Window",
+]
+
+[dependencies.getrandom]
+version = "0.2.2"
+default-features = false
+features = ["js"]
