@@ -1,13 +1,13 @@
 [package]
 name = "grpc-web-client"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Jonathan Rudenberg <jonathan@titanous.com>"]
 license = "MIT OR Apache-2.0"
 edition = "2018"
 repository = "https://github.com/titanous/grpc-web-client"
 homepage = "https://github.com/titanous/grpc-web-client"
 description = """
-An implementation of the gRPC-Web protocol]that allows using tonic in browsers via WASM.
+An implementation of the gRPC-Web protocol that allows using tonic in browsers via WASM.
 """
 readme = "../README.md"
 categories = ["web-programming", "network-programming", "asynchronous"]
