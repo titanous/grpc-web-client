@@ -4,10 +4,9 @@ use bytes::Bytes;
 use call::{Encoding, GrpcWebCall};
 use core::{
     fmt,
-    marker::PhantomData,
     task::{Context, Poll},
 };
-use futures::{future::LocalBoxFuture, FutureExt, Stream, TryStreamExt};
+use futures::{Future, Stream, TryStreamExt};
 use http::{header::HeaderName, request::Request, response::Response, HeaderMap, HeaderValue};
 use http_body::Body;
 use js_sys::{Array, Uint8Array};
@@ -36,22 +35,20 @@ pub type CredentialsMode = web_sys::RequestCredentials;
 pub type RequestMode = web_sys::RequestMode;
 
 #[derive(Clone)]
-pub struct Client<'a> {
+pub struct Client {
     base_uri: String,
     credentials: CredentialsMode,
     mode: RequestMode,
     encoding: Encoding,
-    _a: PhantomData<&'a ()>,
 }
 
-impl<'a> Client<'a> {
+impl Client {
     pub fn new(base_uri: String) -> Self {
         Client {
             base_uri,
             credentials: CredentialsMode::SameOrigin,
             mode: RequestMode::Cors,
             encoding: Encoding::None,
-            _a: PhantomData,
         }
     }
 
@@ -112,17 +109,17 @@ impl<'a> Client<'a> {
     }
 }
 
-impl<'a> GrpcService<BoxBody> for Client<'a> {
+impl GrpcService<BoxBody> for Client {
     type ResponseBody = BoxBody;
     type Error = ClientError;
-    type Future = LocalBoxFuture<'a, Result<Response<BoxBody>, ClientError>>;
+    type Future = Pin<Box<dyn Future<Output = Result<Response<BoxBody>, ClientError>>>>;
 
     fn poll_ready(&mut self, _cx: &mut Context<'_>) -> Poll<Result<(), Self::Error>> {
         Poll::Ready(Ok(()))
     }
 
     fn call(&mut self, rpc: Request<BoxBody>) -> Self::Future {
-        self.clone().request(rpc).boxed_local()
+        Box::pin(self.clone().request(rpc))
     }
 }
 
