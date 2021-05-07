@@ -4,7 +4,7 @@
 [![Documentation](https://docs.rs/grpc-web-client/badge.svg)](https://docs.rs/grpc-web-client)
 [![License](https://img.shields.io/crates/l/grpc-web-client)](LICENSE)
 
-A Rust implementation of the [gRPC-Web protocol](https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-WEB.md) that allows using [tonic](https://github.com/hyperium/tonic) in browsers via WASM.
+A Rust implementation of the [gRPC-Web protocol](https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-WEB.md) that allows using [tonic](https://github.com/hyperium/tonic) in browsers via wasm.
 
 ## Testing
 
@@ -18,22 +18,8 @@ RUST_LOG=info cargo run -p test-server
 
 Then, after the server is built and running, the tests can be run.
 
-To test in Firefox:
-
 ```bash
-wasm-pack test --firefox --headless test/test-client
-```
-
-To test in Chrome:
-
-```bash
-wasm-pack test --chrome --headless test/test-client
-```
-
-To test in Safari:
-
-```bash
-wasm-pack test --safari --headless test/test-client
+wasm-pack test --firefox --chrome --safari --headless test/test-client
 ```
 
 ## Acknowledgments

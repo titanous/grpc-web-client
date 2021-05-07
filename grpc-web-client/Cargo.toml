@@ -7,7 +7,7 @@ edition = "2018"
 repository = "https://github.com/titanous/grpc-web-client"
 homepage = "https://github.com/titanous/grpc-web-client"
 description = """
-An implementation of the gRPC-Web protocol that allows using tonic in browsers via WASM.
+An implementation of the gRPC-Web protocol that allows using tonic in browsers via wasm.
 """
 readme = "../README.md"
 categories = ["web-programming", "network-programming", "asynchronous"]
