@@ -5,14 +5,14 @@ edition = "2018"
 publish = false
 
 [dependencies]
-tokio = { version = "1.4.0", features = ["full"] }
-tokio-stream = { version = "0.1.5" }
-futures = { version = "0.3.13" }
-prost = "0.7.0"
-pretty_env_logger = "0.4.0"
+tokio = { version = "1", features = ["full"] }
+tokio-stream = { version = "0.1" }
+futures = { version = "0.3" }
+prost = "0.8"
+pretty_env_logger = "0.4"
 
-tonic = { git = "https://github.com/alce/tonic", branch = "grpc-web" }
-tonic-web = { git = "https://github.com/alce/tonic", branch = "grpc-web" }
+tonic = "0.5"
+tonic-web = "0.1"
 
 [build-dependencies]
-tonic-build = { git = "https://github.com/alce/tonic", branch = "grpc-web", features = ["prost"] }
+tonic-build = "0.5"
