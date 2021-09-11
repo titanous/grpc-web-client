@@ -216,7 +216,7 @@ where
                 State::ReadData(remaining) => {
                     let buf_remaining = bytes.len() - curr_idx;
                     if buf_remaining < remaining {
-                        self.state = State::ReadData(remaining - bytes.len());
+                        self.state = State::ReadData(remaining - buf_remaining);
                         return Ok(bytes);
                     } else {
                         self.state = State::ReadHeader(HEADER_SIZE);
