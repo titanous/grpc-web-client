@@ -7,7 +7,7 @@ use core::{
     task::{Context, Poll},
 };
 use futures::{Future, Stream, TryStreamExt};
-use http::{header::HeaderName, request::Request, response::Response, HeaderMap, HeaderValue};
+use http::{header::HeaderName, request::Request, response::Response, HeaderMap, HeaderValue, Uri};
 use http_body::Body;
 use js_sys::{Array, Uint8Array};
 use std::{error::Error, pin::Pin};
@@ -21,6 +21,7 @@ use web_sys::{Headers, RequestInit};
 pub enum ClientError {
     Err,
     FetchFailed(JsValue),
+    InvalidUri,
 }
 
 impl Error for ClientError {}
@@ -43,18 +44,34 @@ pub struct Client {
 }
 
 impl Client {
-    pub fn new(base_uri: String) -> Self {
-        Client {
+    /// Create a new [Client] connecting to the given endpoint.
+    ///
+    /// The [Uri] should have a scheme, an authority and no query.
+    pub fn new(uri: &Uri) -> Result<Self, ClientError> {
+        uri.scheme()
+            .and(uri.authority())
+            .and(uri.path_and_query())
+            .map(|path_and_query| path_and_query.query())
+            .ok_or(ClientError::InvalidUri)?;
+
+        let mut base_uri = uri.to_string();
+        if uri.path() == "/" {
+            base_uri.pop();
+        }
+
+        Ok(Client {
             base_uri,
             credentials: CredentialsMode::SameOrigin,
             mode: RequestMode::Cors,
             encoding: Encoding::None,
-        }
+        })
     }
 
     async fn request(self, rpc: Request<BoxBody>) -> Result<Response<BoxBody>, ClientError> {
-        let mut uri = rpc.uri().to_string();
-        uri.insert_str(0, &self.base_uri);
+        assert_eq!(rpc.uri().scheme(), None);
+        assert_eq!(rpc.uri().authority(), None);
+        let mut uri = self.base_uri.clone();
+        uri.push_str(rpc.uri().path_and_query().unwrap().as_str());
 
         let headers = Headers::new().unwrap();
         for (k, v) in rpc.headers().iter() {
