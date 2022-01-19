@@ -1,34 +1,20 @@
 mod call;
+mod errors;
 
 use bytes::Bytes;
 use call::{Encoding, GrpcWebCall};
-use core::{
-    fmt,
-    task::{Context, Poll},
-};
+use core::task::{Context, Poll};
+use errors::ClientError;
 use futures::{Future, Stream, TryStreamExt};
 use http::{header::HeaderName, request::Request, response::Response, HeaderMap, HeaderValue};
 use http_body::Body;
 use js_sys::{Array, Uint8Array};
-use std::{error::Error, pin::Pin};
+use std::pin::Pin;
 use tonic::{body::BoxBody, client::GrpcService, Status};
 use wasm_bindgen::{JsCast, JsValue};
 use wasm_bindgen_futures::JsFuture;
 use wasm_streams::ReadableStream;
 use web_sys::{Headers, RequestInit};
-
-#[derive(Debug, Clone, PartialEq)]
-pub enum ClientError {
-    Err,
-    FetchFailed(JsValue),
-}
-
-impl Error for ClientError {}
-impl fmt::Display for ClientError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{:?}", self)
-    }
-}
 
 pub type CredentialsMode = web_sys::RequestCredentials;
 
@@ -56,17 +42,15 @@ impl Client {
         let mut uri = rpc.uri().to_string();
         uri.insert_str(0, &self.base_uri);
 
-        let headers = Headers::new().unwrap();
+        let headers = Headers::new()?;
         for (k, v) in rpc.headers().iter() {
-            headers.set(k.as_str(), v.to_str().unwrap()).unwrap();
+            headers.set(k.as_str(), v.to_str()?)?;
         }
-        headers.set("x-user-agent", "grpc-web-rust/0.1").unwrap();
-        headers.set("x-grpc-web", "1").unwrap();
-        headers
-            .set("content-type", self.encoding.to_content_type())
-            .unwrap();
+        headers.set("x-user-agent", "grpc-web-rust/0.1")?;
+        headers.set("x-grpc-web", "1")?;
+        headers.set("content-type", self.encoding.to_content_type())?;
 
-        let body_bytes = hyper::body::to_bytes(rpc.into_body()).await.unwrap();
+        let body_bytes = hyper::body::to_bytes(rpc.into_body()).await?;
         let body_array: Uint8Array = body_bytes.as_ref().into();
         let body_js: &JsValue = body_array.as_ref();
 
@@ -77,35 +61,51 @@ impl Client {
             .body(Some(body_js))
             .headers(headers.as_ref());
 
-        let request = web_sys::Request::new_with_str_and_init(&uri, &init).unwrap();
+        let request = web_sys::Request::new_with_str_and_init(&uri, &init)?;
 
-        let window = web_sys::window().unwrap();
-        let fetch = JsFuture::from(window.fetch_with_request(&request))
-            .await
-            .map_err(ClientError::FetchFailed)?;
-        let fetch_res: web_sys::Response = fetch.dyn_into().unwrap();
+        let window =
+            web_sys::window().ok_or(ClientError::UnexpectedOptionNone("Could not get window"))?;
+        let fetch = JsFuture::from(window.fetch_with_request(&request)).await?;
+        let fetch_res: web_sys::Response = fetch.dyn_into()?;
 
         let mut res = Response::builder().status(fetch_res.status());
-        let headers = res.headers_mut().unwrap();
+        let headers = res.headers_mut().ok_or(ClientError::UnexpectedOptionNone(
+            "Could not get headers from response builder",
+        ))?;
 
-        for kv in js_sys::try_iter(fetch_res.headers().as_ref())
-            .unwrap()
-            .unwrap()
-        {
-            let pair: Array = kv.unwrap().into();
+        for kv in js_sys::try_iter(fetch_res.headers().as_ref())?.ok_or(
+            ClientError::UnexpectedOptionNone("Could not get headers from fetch response"),
+        )? {
+            let pair: Array = kv?.into();
             headers.append(
-                HeaderName::from_bytes(pair.get(0).as_string().unwrap().as_bytes()).unwrap(),
-                HeaderValue::from_str(&pair.get(1).as_string().unwrap()).unwrap(),
+                HeaderName::from_bytes(
+                    pair.get(0)
+                        .as_string()
+                        .ok_or(ClientError::UnexpectedOptionNone(
+                            "Header name is not a string",
+                        ))?
+                        .as_bytes(),
+                )?,
+                HeaderValue::from_str(&pair.get(1).as_string().ok_or(
+                    ClientError::UnexpectedOptionNone("Header value is not a string"),
+                )?)?,
             );
         }
 
-        let body_stream = ReadableStream::from_raw(fetch_res.body().unwrap().unchecked_into());
+        let body_stream = ReadableStream::from_raw(
+            fetch_res
+                .body()
+                .ok_or(ClientError::UnexpectedOptionNone(
+                    "Fetch response has no body",
+                ))?
+                .unchecked_into(),
+        );
         let body = GrpcWebCall::client_response(
             ReadableStreamBody::new(body_stream),
             Encoding::from_content_type(headers),
         );
 
-        Ok(res.body(BoxBody::new(body)).unwrap())
+        Ok(res.body(BoxBody::new(body))?)
     }
 }
 
