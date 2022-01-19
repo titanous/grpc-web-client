@@ -1,43 +1,20 @@
 mod call;
+mod errors;
 
 use bytes::Bytes;
 use call::{Encoding, GrpcWebCall};
 use core::task::{Context, Poll};
+use errors::ClientError;
 use futures::{Future, Stream, TryStreamExt};
 use http::{header::HeaderName, request::Request, response::Response, HeaderMap, HeaderValue};
 use http_body::Body;
 use js_sys::{Array, Uint8Array};
 use std::pin::Pin;
-use thiserror::Error;
 use tonic::{body::BoxBody, client::GrpcService, Status};
 use wasm_bindgen::{JsCast, JsValue};
 use wasm_bindgen_futures::JsFuture;
 use wasm_streams::ReadableStream;
 use web_sys::{Headers, RequestInit};
-
-#[derive(Debug, Error)]
-pub enum ClientError {
-    #[error(transparent)]
-    HeaderToStrError(#[from] http::header::ToStrError),
-    #[error(transparent)]
-    HttpError(#[from] http::Error),
-    #[error(transparent)]
-    InvalidHeaderName(#[from] http::header::InvalidHeaderName),
-    #[error(transparent)]
-    InvalidHeaderValue(#[from] http::header::InvalidHeaderValue),
-    #[error(transparent)]
-    TonicStatus(#[from] tonic::Status),
-    #[error("{0:}")]
-    UnexpectedOptionNone(&'static str),
-    #[error("{0:?}")]
-    WebSysErr(JsValue),
-}
-
-impl From<JsValue> for ClientError {
-    fn from(j: JsValue) -> Self {
-        Self::WebSysErr(j)
-    }
-}
 
 pub type CredentialsMode = web_sys::RequestCredentials;
 

@@ -5,6 +5,8 @@ use std::pin::Pin;
 use std::task::{Context, Poll};
 use std::{convert::TryInto, error::Error};
 
+use crate::errors::ClientError;
+use crate::Client;
 use byteorder::{BigEndian, ByteOrder};
 use bytes::{Buf, BufMut, Bytes, BytesMut};
 use futures::{ready, Stream};
@@ -163,7 +165,7 @@ where
         frame
     }
 
-    fn handle_frames(&mut self, mut bytes: Bytes) -> Result<Bytes, <B as Body>::Error> {
+    fn handle_frames(&mut self, mut bytes: Bytes) -> Result<Bytes, ClientError> {
         if !self.decode_trailers {
             return Ok(bytes);
         }
@@ -201,9 +203,7 @@ where
                         continue;
                     }
 
-                    let frame_len: usize = BigEndian::read_u32(&self.header_buf[1..])
-                        .try_into()
-                        .unwrap();
+                    let frame_len: usize = BigEndian::read_u32(&self.header_buf[1..]).try_into()?;
                     self.header_buf.clear();
                     if is_trailer {
                         self.header_buf.reserve(frame_len);
@@ -243,16 +243,19 @@ where
 
                     let mut trailers = [httparse::EMPTY_HEADER; 64];
                     header_bytes.extend_from_slice(b"\n"); // parse_headers returns Status::Partial without this
-                    let (_, trailers) =
-                        httparse::parse_headers(header_bytes.as_ref(), &mut trailers)
-                            .unwrap()
-                            .unwrap();
+                    let trailers =
+                        match httparse::parse_headers(header_bytes.as_ref(), &mut trailers)? {
+                            httparse::Status::Complete((_, h)) => h,
+                            httparse::Status::Partial => {
+                                return Err(ClientError::HttpIncompleteParseError)
+                            }
+                        };
 
                     self.trailers.reserve(trailers.len());
                     for h in trailers {
                         self.trailers.append(
-                            HeaderName::from_bytes(h.name.as_bytes()).unwrap(),
-                            HeaderValue::from_bytes(h.value).unwrap(),
+                            HeaderName::from_bytes(h.name.as_bytes())?,
+                            HeaderValue::from_bytes(h.value)?,
                         );
                     }
 
@@ -293,10 +296,10 @@ where
             },
 
             Encoding::None => match ready!(Pin::new(&mut self.inner).poll_data(cx)) {
-                Some(res) => Poll::Ready(Some(
-                    res.and_then(|b| self.handle_frames(b))
-                        .map_err(internal_error),
-                )),
+                Some(res) => Poll::Ready(Some(match res {
+                    Ok(b) => self.handle_frames(b).map_err(internal_error),
+                    Err(e) => Err(internal_error(e)),
+                })),
                 None => Poll::Ready(None),
             },
         }
