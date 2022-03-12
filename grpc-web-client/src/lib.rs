@@ -12,6 +12,7 @@ use http_body::Body;
 use js_sys::{Array, Uint8Array};
 use std::{error::Error, pin::Pin};
 use tonic::{body::BoxBody, client::GrpcService, Status};
+use tower_service::Service;
 use wasm_bindgen::{JsCast, JsValue};
 use wasm_bindgen_futures::JsFuture;
 use wasm_streams::ReadableStream;
@@ -109,8 +110,8 @@ impl Client {
     }
 }
 
-impl GrpcService<BoxBody> for Client {
-    type ResponseBody = BoxBody;
+impl Service<Request<BoxBody>> for Client {
+    type Response = Response<BoxBody>;
     type Error = ClientError;
     type Future = Pin<Box<dyn Future<Output = Result<Response<BoxBody>, ClientError>>>>;
 
@@ -118,8 +119,8 @@ impl GrpcService<BoxBody> for Client {
         Poll::Ready(Ok(()))
     }
 
-    fn call(&mut self, rpc: Request<BoxBody>) -> Self::Future {
-        Box::pin(self.clone().request(rpc))
+    fn call(&mut self, req: Request<BoxBody>) -> Self::Future {
+        Box::pin(self.clone().request(req))
     }
 }
 

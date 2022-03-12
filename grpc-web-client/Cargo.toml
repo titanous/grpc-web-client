@@ -28,6 +28,7 @@ futures = { version = "0.3", default-features = false, features = ["alloc"] }
 js-sys = { version = "0.3", default-features = false }
 httparse = { version = "1", default-features = false }
 hyper = { version = "0.14", default-features = false }
+tower-service = { version = "0.3", default-features = false }
 
 [dependencies.web-sys]
 version = "0.3"
