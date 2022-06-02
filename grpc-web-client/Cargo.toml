@@ -14,8 +14,8 @@ categories = ["web-programming", "network-programming", "asynchronous"]
 keywords = ["grpc", "tonic", "wasm", "wasm-bindgen", "js"]
 
 [dependencies]
-tonic = { version = "0.6", default-features = false }
-prost = { version = "0.9", default-features = false }
+tonic = { version = "0.7", default-features = false }
+prost = { version = "0.10", default-features = false }
 http = { version = "0.2", default-features = false }
 http-body = { version = "0.4", default-features = false }
 bytes = { version = "1", default-features = false }
