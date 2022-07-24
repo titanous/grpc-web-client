@@ -21,7 +21,7 @@ http-body = { version = "0.4", default-features = false }
 bytes = { version = "1", default-features = false }
 byteorder = { version = "1", default-features = false }
 base64 = { version = "0.13", default-features = false }
-wasm-bindgen = { version = "0.2", default-features = false, features = ["serde-serialize"] }
+wasm-bindgen = { version = "0.2", default-features = false }
 wasm-bindgen-futures = { version = "0.4", default-features = false }
 wasm-streams = { version = "0.2" }
 futures = { version = "0.3", default-features = false, features = ["alloc"] }
