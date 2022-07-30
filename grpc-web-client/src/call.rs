@@ -413,7 +413,7 @@ impl Encoding {
 
     fn from_header(value: Option<&HeaderValue>) -> Encoding {
         match value.and_then(|val| val.to_str().ok()) {
-            Some(GRPC_WEB_TEXT_PROTO) | Some(GRPC_WEB_TEXT) | Some(GRPC_TONIC_PROTO) => Encoding::Base64,
+            Some(GRPC_WEB_TEXT_PROTO) | Some(GRPC_WEB_TEXT) => Encoding::Base64,
             _ => Encoding::None,
         }
     }
