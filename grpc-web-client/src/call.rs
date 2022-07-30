@@ -24,11 +24,12 @@ pub(crate) mod content_types {
     pub(crate) const GRPC_WEB_PROTO: &str = "application/grpc-web+proto";
     pub(crate) const GRPC_WEB_TEXT: &str = "application/grpc-web-text";
     pub(crate) const GRPC_WEB_TEXT_PROTO: &str = "application/grpc-web-text+proto";
+    pub(crate) const GRPC_TONIC_PROTO: &str = "application/grpc";
 
     pub(crate) fn is_grpc_web(headers: &HeaderMap) -> bool {
         matches!(
             content_type(headers),
-            Some(GRPC_WEB) | Some(GRPC_WEB_PROTO) | Some(GRPC_WEB_TEXT) | Some(GRPC_WEB_TEXT_PROTO)
+            Some(GRPC_WEB) | Some(GRPC_WEB_PROTO) | Some(GRPC_WEB_TEXT) | Some(GRPC_WEB_TEXT_PROTO) | Some(GRPC_TONIC_PROTO)
         )
     }
 
@@ -412,7 +413,7 @@ impl Encoding {
 
     fn from_header(value: Option<&HeaderValue>) -> Encoding {
         match value.and_then(|val| val.to_str().ok()) {
-            Some(GRPC_WEB_TEXT_PROTO) | Some(GRPC_WEB_TEXT) => Encoding::Base64,
+            Some(GRPC_WEB_TEXT_PROTO) | Some(GRPC_WEB_TEXT) | Some(GRPC_TONIC_PROTO) => Encoding::Base64,
             _ => Encoding::None,
         }
     }
