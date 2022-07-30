@@ -66,6 +66,9 @@ impl Client {
         headers
             .set("content-type", self.encoding.to_content_type())
             .unwrap();
+        headers
+            .set("accept", self.encoding.to_content_type())
+            .unwrap();
 
         let body_bytes = hyper::body::to_bytes(rpc.into_body()).await.unwrap();
         let body_array: Uint8Array = body_bytes.as_ref().into();
