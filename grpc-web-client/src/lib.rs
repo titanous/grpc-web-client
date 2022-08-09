@@ -17,6 +17,9 @@ use wasm_bindgen_futures::JsFuture;
 use wasm_streams::ReadableStream;
 use web_sys::{Headers, RequestInit};
 
+#[cfg(feature = "WorkerGlobalScope")]
+use web_sys::WorkerGlobalScope;
+
 #[derive(Debug, Clone, PartialEq)]
 pub enum ClientError {
     Err,
@@ -33,6 +36,28 @@ impl fmt::Display for ClientError {
 pub type CredentialsMode = web_sys::RequestCredentials;
 
 pub type RequestMode = web_sys::RequestMode;
+
+
+#[cfg(not(feature = "WorkerGlobalScope"))]
+async fn fetch_with_request(request: web_sys::Request) -> Result<web_sys::Response, ClientError> {
+    let window = web_sys::window().unwrap();
+    let fetch = JsFuture::from(window.fetch_with_request(&request))
+        .await
+        .map_err(ClientError::FetchFailed)?;
+
+    fetch.dyn_into().map_err(ClientError::FetchFailed)
+}
+
+#[cfg(feature = "WorkerGlobalScope")]
+async fn fetch_with_request(request: web_sys::Request) -> Result<web_sys::Response, ClientError> {
+    let worker: WorkerGlobalScope = js_sys::global().unchecked_into();
+
+    let fetch = JsFuture::from(worker.fetch_with_request(&request))
+    .await
+    .map_err(ClientError::FetchFailed)?;
+
+    fetch.dyn_into().map_err(ClientError::FetchFailed)
+}
 
 #[derive(Clone)]
 pub struct Client {
@@ -78,12 +103,7 @@ impl Client {
             .headers(headers.as_ref());
 
         let request = web_sys::Request::new_with_str_and_init(&uri, &init).unwrap();
-
-        let window = web_sys::window().unwrap();
-        let fetch = JsFuture::from(window.fetch_with_request(&request))
-            .await
-            .map_err(ClientError::FetchFailed)?;
-        let fetch_res: web_sys::Response = fetch.dyn_into().unwrap();
+        let fetch_res = fetch_with_request(request).await?;
 
         let mut res = Response::builder().status(fetch_res.status());
         let headers = res.headers_mut().unwrap();

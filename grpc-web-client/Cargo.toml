@@ -13,6 +13,9 @@ readme = "../README.md"
 categories = ["web-programming", "network-programming", "asynchronous"]
 keywords = ["grpc", "tonic", "wasm", "wasm-bindgen", "js"]
 
+[features]
+WorkerGlobalScope = [ "web-sys/WorkerGlobalScope" ]
+
 [dependencies]
 tonic = { version = "0.6", default-features = false }
 prost = { version = "0.9", default-features = false }
