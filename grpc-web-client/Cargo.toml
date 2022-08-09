@@ -14,9 +14,11 @@ categories = ["web-programming", "network-programming", "asynchronous"]
 keywords = ["grpc", "tonic", "wasm", "wasm-bindgen", "js"]
 
 [features]
-WorkerGlobalScope = [ "web-sys/WorkerGlobalScope" ]
+#default = ["web-worker"]
+web-worker = [ "web-sys/WorkerGlobalScope" ]
 
 [dependencies]
+cfg-if = "1"
 tonic = { version = "0.6", default-features = false }
 prost = { version = "0.9", default-features = false }
 http = { version = "0.2", default-features = false }
