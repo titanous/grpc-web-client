@@ -5,6 +5,8 @@ use std::pin::Pin;
 use std::task::{Context, Poll};
 use std::{convert::TryInto, error::Error};
 
+use base64::engine::general_purpose::STANDARD as BASE64_STANDARD;
+use base64::Engine;
 use byteorder::{BigEndian, ByteOrder};
 use bytes::{Buf, BufMut, Bytes, BytesMut};
 use futures::{ready, Stream};
@@ -134,7 +136,8 @@ where
 
         // Split `buf` at the largest index that is multiple of 4. Decode the
         // returned `Bytes`, keeping the rest for the next attempt to decode.
-        base64::decode(self.buf.split_to(self.max_decodable()).freeze())
+        BASE64_STANDARD
+            .decode(self.buf.split_to(self.max_decodable()).freeze())
             .map(|decoded| Some(Bytes::from(decoded)))
             .map_err(internal_error)
     }
@@ -308,7 +311,7 @@ where
     ) -> Poll<Option<Result<B::Data, Status>>> {
         if let Some(mut res) = ready!(Pin::new(&mut self.inner).poll_data(cx)) {
             if self.encoding == Encoding::Base64 {
-                res = res.map(|b| base64::encode(b).into())
+                res = res.map(|b| BASE64_STANDARD.encode(b).into())
             }
 
             return Poll::Ready(Some(res.map_err(internal_error)));
@@ -322,7 +325,7 @@ where
                     let mut frame = self.make_trailers_frame(map);
 
                     if self.encoding == Encoding::Base64 {
-                        frame = base64::encode(frame).into_bytes();
+                        frame = BASE64_STANDARD.encode(frame).into_bytes();
                     }
 
                     self.poll_trailers = false;

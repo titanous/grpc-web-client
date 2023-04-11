@@ -1,0 +1,164 @@
+{
+  "nodes": {
+    "andoriyu": {
+      "inputs": {
+        "fenix": [
+          "fenix"
+        ],
+        "flake-utils": [
+          "flake-utils"
+        ],
+        "nix-dart": "nix-dart",
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1653332503,
+        "narHash": "sha256-4s9pvh0zQmdOp9Ko9p62iNAtwE2HshnMvXtRnOYhjjY=",
+        "owner": "andoriyu",
+        "repo": "flakes",
+        "rev": "cd34fba9d4786aa3e28dc2970c6bd5982e6c5449",
+        "type": "github"
+      },
+      "original": {
+        "owner": "andoriyu",
+        "repo": "flakes",
+        "type": "github"
+      }
+    },
+    "fenix": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "rust-analyzer-src": "rust-analyzer-src"
+      },
+      "locked": {
+        "lastModified": 1653287448,
+        "narHash": "sha256-hivxw7an9UjXJzxpMqcC8hgMyPA2n8pnxQ+oegMfXzI=",
+        "owner": "nix-community",
+        "repo": "fenix",
+        "rev": "66fb506299ec96d61a5b692e907229322f5206a4",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "fenix",
+        "type": "github"
+      }
+    },
+    "flake-utils": {
+      "locked": {
+        "lastModified": 1649676176,
+        "narHash": "sha256-OWKJratjt2RW151VUlJPRALb7OU2S5s+f0vLj4o1bHM=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "a4b154ebbdc88c8498a5c7b01589addc9e9cb678",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
+    "flake-utils_2": {
+      "locked": {
+        "lastModified": 1652776076,
+        "narHash": "sha256-gzTw/v1vj4dOVbpBSJX4J0DwUR6LIyXo7/SuuTJp1kM=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "04c1b180862888302ddfb2e3ad9eaa63afc60cf8",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
+    "nix-dart": {
+      "inputs": {
+        "flake-utils": "flake-utils",
+        "nixpkgs": [
+          "andoriyu",
+          "nixpkgs"
+        ],
+        "pub2nix": "pub2nix"
+      },
+      "locked": {
+        "lastModified": 1652213615,
+        "narHash": "sha256-+eehm2JlhoKgY+Ea4DTxDMei/x4Fgz7S+ZPqWpZysuI=",
+        "owner": "tadfisher",
+        "repo": "nix-dart",
+        "rev": "6f686ddf984306d944e9b5adf9f35f3a0a0a70b7",
+        "type": "github"
+      },
+      "original": {
+        "owner": "tadfisher",
+        "repo": "nix-dart",
+        "type": "github"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1653060744,
+        "narHash": "sha256-kfRusllRumpt33J1hPV+CeCCylCXEU7e0gn2/cIM7cY=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "dfd82985c273aac6eced03625f454b334daae2e8",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "pub2nix": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1594192744,
+        "narHash": "sha256-pDvcXSG1Mh2BpwkqAcNDJzcupV3pIAAtZJLfkiHMAz4=",
+        "owner": "paulyoung",
+        "repo": "pub2nix",
+        "rev": "0c7ecca590fcd1616db8c6468f799ffef36c85e9",
+        "type": "github"
+      },
+      "original": {
+        "owner": "paulyoung",
+        "repo": "pub2nix",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "andoriyu": "andoriyu",
+        "fenix": "fenix",
+        "flake-utils": "flake-utils_2",
+        "nixpkgs": "nixpkgs"
+      }
+    },
+    "rust-analyzer-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1653243417,
+        "narHash": "sha256-5M3GmDsHFEgGefUidr2pqEbvdGP3XGDH85yoefnD5nI=",
+        "owner": "rust-lang",
+        "repo": "rust-analyzer",
+        "rev": "84be2eaf99c1c057b401f755f92d22d5896900f2",
+        "type": "github"
+      },
+      "original": {
+        "owner": "rust-lang",
+        "ref": "nightly",
+        "repo": "rust-analyzer",
+        "type": "github"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}
